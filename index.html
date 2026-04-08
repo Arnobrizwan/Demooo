@@ -1317,6 +1317,8 @@ const vocab = [
 // AUDIO + AI CONFIG
 // ==============================
 let currentAudio = null;
+let speechSequenceId = 0;
+let speechVoices = [];
 const GEMINI_STORAGE_KEY = 'gemini_api_key';
 const GEMINI_TTS_MODELS = ['gemini-2.5-flash-preview-tts', 'gemini-2.0-flash'];
 const GEMINI_STORY_MODEL = 'gemini-3.1-pro-preview';
@@ -1378,11 +1380,75 @@ function setBtnPlaying(btnEl, on) {
   btnEl.classList.toggle('playing', on);
 }
 
+function refreshSpeechVoices() {
+  if (!window.speechSynthesis) return [];
+  speechVoices = window.speechSynthesis.getVoices();
+  return speechVoices;
+}
+
+function pickSpeechVoice(lang) {
+  const voices = speechVoices.length ? speechVoices : refreshSpeechVoices();
+  if (!voices.length) return null;
+
+  const lowerLang = lang.toLowerCase();
+  const baseLang = lowerLang.split('-')[0];
+
+  return voices.find(v => v.lang?.toLowerCase() === lowerLang)
+    || voices.find(v => v.lang?.toLowerCase().startsWith(lowerLang))
+    || voices.find(v => v.lang?.toLowerCase() === baseLang)
+    || voices.find(v => v.lang?.toLowerCase().startsWith(baseLang + '-'))
+    || null;
+}
+
+function waitForSpeechVoices(timeoutMs = 1200) {
+  if (!window.speechSynthesis) return Promise.resolve([]);
+  const voices = refreshSpeechVoices();
+  if (voices.length) return Promise.resolve(voices);
+
+  return new Promise(resolve => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
+      resolve(refreshSpeechVoices());
+    };
+    const onVoicesChanged = () => finish();
+    const timer = setTimeout(finish, timeoutMs);
+    window.speechSynthesis.addEventListener('voiceschanged', onVoicesChanged);
+  });
+}
+
+async function speakUtterance(text, lang, opts = {}) {
+  const { rate = 1, onBoundary } = opts;
+  if (!window.speechSynthesis || !text) return;
+
+  await waitForSpeechVoices();
+
+  return new Promise(resolve => {
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang;
+    utt.rate = rate;
+    const voice = pickSpeechVoice(lang);
+    if (voice) utt.voice = voice;
+    if (onBoundary) utt.onboundary = onBoundary;
+    const done = () => resolve();
+    utt.onend = done;
+    utt.onerror = done;
+    window.speechSynthesis.speak(utt);
+  });
+}
+
 // Pre-load voices
-if (window.speechSynthesis) window.speechSynthesis.getVoices();
+if (window.speechSynthesis) {
+  refreshSpeechVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', refreshSpeechVoices);
+}
 
 async function playBilingual(arabic, english, btnEl) {
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  speechSequenceId += 1;
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   document.querySelectorAll('.sound-btn-card, .quiz-sound-btn').forEach(b => b.classList.remove('playing'));
   if (typeof btnEl === 'string') btnEl = document.getElementById(btnEl);
@@ -1396,53 +1462,44 @@ async function playBilingual(arabic, english, btnEl) {
         : `Say this Arabic word: "${arabic}".`;
       const ctrl = new AbortController();
       const timeout = setTimeout(() => ctrl.abort(), 6000);
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TTS_MODELS[0]}:generateContent?key=${key}`,
-        { method:'POST', headers:{'Content-Type':'application/json'}, signal: ctrl.signal,
-          body: JSON.stringify({ contents:[{parts:[{text:prompt}]}],
-            generationConfig:{ responseModalities:['AUDIO'],
-              speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:'Aoede'}}}}})
-        }
-      );
-      clearTimeout(timeout);
-      if (!res.ok) throw new Error(res.status);
-      const data = await res.json();
-      const part = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
-      if (!part) throw new Error('no audio');
-      const blob = new Blob([Uint8Array.from(atob(part.data),c=>c.charCodeAt(0))],{type:part.mimeType});
-      currentAudio = new Audio(URL.createObjectURL(blob));
-      currentAudio.onended = () => setBtnPlaying(btnEl, false);
-      currentAudio.onerror = () => { setBtnPlaying(btnEl,false); webSpeechTTS(arabic,english,btnEl); };
-      currentAudio.play(); return;
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TTS_MODELS[0]}:generateContent?key=${key}`,
+          { method:'POST', headers:{'Content-Type':'application/json'}, signal: ctrl.signal,
+            body: JSON.stringify({ contents:[{parts:[{text:prompt}]}],
+              generationConfig:{ responseModalities:['AUDIO'],
+                speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:'Aoede'}}}}})
+          }
+        );
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        const part = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+        if (!part) throw new Error('no audio');
+        const blob = new Blob([Uint8Array.from(atob(part.data),c=>c.charCodeAt(0))],{type:part.mimeType});
+        currentAudio = new Audio(URL.createObjectURL(blob));
+        currentAudio.onended = () => setBtnPlaying(btnEl, false);
+        currentAudio.onerror = () => { setBtnPlaying(btnEl,false); webSpeechTTS(arabic,english,btnEl); };
+        currentAudio.play(); return;
+      } finally {
+        clearTimeout(timeout);
+      }
     } catch(e) { console.warn('Gemini TTS:', e); }
   }
   webSpeechTTS(arabic, english, btnEl);
 }
 
-function webSpeechTTS(arabic, english, btnEl) {
+async function webSpeechTTS(arabic, english, btnEl) {
   if (!window.speechSynthesis) { setBtnPlaying(btnEl, false); return; }
+  const runId = ++speechSequenceId;
   window.speechSynthesis.cancel();
 
-  const speak = (text, lang, onDone) => {
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = lang;
-    utt.rate = lang.startsWith('ar') ? 0.8 : 0.9;
-    // Pick best matching voice
-    const voices = window.speechSynthesis.getVoices();
-    const v = voices.find(v => v.lang.startsWith(lang.split('-')[0]));
-    if (v) utt.voice = v;
-    utt.onend = onDone;
-    utt.onerror = onDone;
-    window.speechSynthesis.speak(utt);
-  };
-
-  speak(arabic, 'ar-SA', () => {
-    if (english) {
-      speak(english, 'en-US', () => setBtnPlaying(btnEl, false));
-    } else {
-      setBtnPlaying(btnEl, false);
-    }
-  });
+  try {
+    await speakUtterance(arabic, 'ar-SA', { rate: 0.8 });
+    if (runId !== speechSequenceId) return;
+    if (english) await speakUtterance(english, 'en-US', { rate: 0.9 });
+  } finally {
+    if (runId === speechSequenceId) setBtnPlaying(btnEl, false);
+  }
 }
 
 // Alias for story word clicks (Arabic only)
@@ -1867,6 +1924,7 @@ function toggleStoryTTS(idx) {
 
 function stopStoryTTS() {
   if (storyAudio) { storyAudio.pause(); storyAudio = null; }
+  speechSequenceId += 1;
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   if (activeStoryIdx >= 0) {
     const btn = document.getElementById('play-btn-' + activeStoryIdx);
@@ -1929,51 +1987,41 @@ async function playWithGeminiTTS(arabic, english, idx, key) {
   storyAudio.play();
 }
 
-function playWithWebSpeech(arabic, english, idx) {
+async function playWithWebSpeech(arabic, english, idx) {
   const st = document.getElementById('tts-status-' + idx);
   if (!window.speechSynthesis) {
     if (st) st.textContent = '⚠️ TTS not supported in this browser';
     return;
   }
 
+  const runId = ++speechSequenceId;
   window.speechSynthesis.cancel();
-  const voices = window.speechSynthesis.getVoices();
   let wordIndex = 0;
 
   if (st) st.textContent = '🔊 Playing Arabic then English (Web Speech)...';
 
-  // --- Speak Arabic with word highlighting ---
-  const uttAr = new SpeechSynthesisUtterance(arabic);
-  uttAr.lang = 'ar-SA';
-  uttAr.rate = 0.75;
-  const arVoice = voices.find(v => v.lang.startsWith('ar'));
-  if (arVoice) uttAr.voice = arVoice;
+  try {
+    await speakUtterance(arabic, 'ar-SA', {
+      rate: 0.75,
+      onBoundary: (e) => {
+        if (runId !== speechSequenceId || e.name !== 'word') return;
+        document.querySelectorAll(`#story-arabic-${idx} .word`).forEach(w => w.classList.remove('highlight'));
+        const spans = document.querySelectorAll(`#story-arabic-${idx} .word`);
+        if (spans[wordIndex]) spans[wordIndex].classList.add('highlight');
+        wordIndex++;
+      }
+    });
 
-  uttAr.onboundary = (e) => {
-    if (e.name !== 'word') return;
     document.querySelectorAll(`#story-arabic-${idx} .word`).forEach(w => w.classList.remove('highlight'));
-    const spans = document.querySelectorAll(`#story-arabic-${idx} .word`);
-    if (spans[wordIndex]) spans[wordIndex].classList.add('highlight');
-    wordIndex++;
-  };
+    if (runId !== speechSequenceId) return;
 
-  uttAr.onend = () => {
-    document.querySelectorAll(`#story-arabic-${idx} .word`).forEach(w => w.classList.remove('highlight'));
     if (!english) { stopStoryTTS(); return; }
-    // --- Then speak English ---
-    if (st) st.textContent = '🔊 Now reading English translation...';
-    const uttEn = new SpeechSynthesisUtterance(english);
-    uttEn.lang = 'en-US';
-    uttEn.rate = 0.9;
-    const enVoice = voices.find(v => v.lang.startsWith('en'));
-    if (enVoice) uttEn.voice = enVoice;
-    uttEn.onend = () => stopStoryTTS();
-    uttEn.onerror = () => stopStoryTTS();
-    window.speechSynthesis.speak(uttEn);
-  };
 
-  uttAr.onerror = () => stopStoryTTS();
-  window.speechSynthesis.speak(uttAr);
+    if (st) st.textContent = '🔊 Now reading English translation...';
+    await speakUtterance(english, 'en-US', { rate: 0.9 });
+  } finally {
+    if (runId === speechSequenceId) stopStoryTTS();
+  }
 }
 
 function playWordTTS(word, el) {
