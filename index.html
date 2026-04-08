@@ -1792,21 +1792,7 @@ async function playStoryTTS(idx) {
   if (btn) { btn.classList.add('active'); btn.innerHTML = '<span class="btn-icon">■</span> Stop'; }
   if (card) card.classList.add('playing');
 
-  const key = getGeminiKey() || (document.getElementById('gemini-api-key') || {}).value?.trim() || '';
-
-  // Try Gemini TTS (Arabic + English together)
-  if (key) {
-    if (st) st.textContent = '⏳ Generating audio with Gemini AI...';
-    try {
-      await playWithGeminiTTS(s.arabic, s.bengali, idx, key);
-      return;
-    } catch(e) {
-      console.error('Story Gemini TTS failed:', e);
-      if (st) st.textContent = '⚠️ Gemini TTS failed, using Web Speech...';
-    }
-  }
-
-  // Fallback: Web Speech API
+  // Use Web Speech API — instant, no network delay
   playWithWebSpeech(s.arabic, s.bengali, idx);
 }
 
