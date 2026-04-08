@@ -1230,7 +1230,7 @@
         <div class="quiz-question-label">What is the meaning of this Arabic word?</div>
         <div class="quiz-arabic" id="q-arabic"></div>
         <div class="quiz-transliteration" id="q-translit"></div>
-        <button class="quiz-sound-btn" onclick="playBilingual(quizWords[currentQ].arabic, quizWords[currentQ].english, this)">🔊 Listen</button>
+        <button class="quiz-sound-btn" onclick="playSound(quizWords[currentQ].arabic, this)">🔊 Listen</button>
       </div>
 
       <div class="quiz-options" id="q-options"></div>
@@ -1579,7 +1579,7 @@ function renderQuestion() {
 
   // Update sound btn
   const soundBtn = document.querySelector('.quiz-sound-btn');
-  soundBtn.onclick = () => playBilingual(q.arabic, q.english, soundBtn);
+  soundBtn.onclick = () => playSound(q.arabic, soundBtn);
   soundBtn.classList.remove('playing');
 
   // Build options: 1 correct + 3 wrong
@@ -1617,7 +1617,7 @@ function checkAnswer(btn, isCorrect, q) {
     document.getElementById('q-score').textContent = quizScore;
     feedback.textContent = '✓ Excellent! Correct answer!';
     feedback.className = 'quiz-feedback correct';
-    playBilingual(q.arabic, q.english);
+    playSound(q.arabic);
   } else {
     btn.classList.add('wrong');
     feedback.textContent = `✗ Wrong! Correct answer: ${q.english}`;
