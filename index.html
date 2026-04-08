@@ -1133,6 +1133,21 @@
 </head>
 <body>
 
+<div class="global-key-bar">
+  <span class="key-bar-label">Gemini API Key</span>
+  <input
+    type="password"
+    class="global-key-input"
+    id="gemini-api-key"
+    placeholder="Paste your own key to enable AI stories and Gemini voice"
+    autocomplete="off"
+    onkeydown="if(event.key === 'Enter') saveApiKey()"
+  >
+  <button class="api-save-btn" onclick="saveApiKey()">Save</button>
+  <span class="key-bar-hint">Stored only in this browser.</span>
+  <div class="api-status" id="api-status"></div>
+</div>
+
 <!-- HEADER -->
 <header class="header">
   <div class="header-ornament">
@@ -1299,12 +1314,61 @@ const vocab = [
 ];
 
 // ==============================
-// AUDIO — Gemini 2.5 Flash TTS
+// AUDIO + AI CONFIG
 // ==============================
 let currentAudio = null;
+const GEMINI_STORAGE_KEY = 'gemini_api_key';
+const GEMINI_TTS_MODELS = ['gemini-2.5-flash-preview-tts', 'gemini-2.0-flash'];
+const GEMINI_STORY_MODEL = 'gemini-3.1-pro-preview';
 
 function getGeminiKey() {
-  return 'AIzaSyB5qtE4DNLMQpYY55irRDDI-ahlMM2YPFc';
+  const inputVal = document.getElementById('gemini-api-key')?.value.trim() || '';
+  if (inputVal) return inputVal;
+  if (geminiApiKey) return geminiApiKey;
+  try {
+    return localStorage.getItem(GEMINI_STORAGE_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+function setAiGenIdleMessage() {
+  const st = document.getElementById('ai-gen-status');
+  if (!st || st.classList.contains('loading')) return;
+  st.className = 'ai-gen-status';
+  st.textContent = getGeminiKey()
+    ? 'Enter a topic and generate a new AI story.'
+    : 'Add a Gemini API key above to generate new AI stories.';
+}
+
+function loadSavedApiKey() {
+  const input = document.getElementById('gemini-api-key');
+  if (!input) return;
+  try {
+    geminiApiKey = localStorage.getItem(GEMINI_STORAGE_KEY) || '';
+  } catch {
+    geminiApiKey = '';
+  }
+  if (geminiApiKey) input.value = geminiApiKey;
+  setAiGenIdleMessage();
+}
+
+async function getGeminiErrorMessage(res) {
+  let detail = '';
+  try {
+    const data = await res.json();
+    detail = data?.error?.message || '';
+  } catch {
+    try {
+      detail = await res.text();
+    } catch {
+      detail = '';
+    }
+  }
+  if (res.status === 429) {
+    return 'Gemini quota or rate limit reached for this API key. Save a key with available quota, then try again.';
+  }
+  return detail || ('API error ' + res.status);
 }
 
 function setBtnPlaying(btnEl, on) {
@@ -1333,7 +1397,7 @@ async function playBilingual(arabic, english, btnEl) {
       const ctrl = new AbortController();
       const timeout = setTimeout(() => ctrl.abort(), 6000);
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${key}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TTS_MODELS[0]}:generateContent?key=${key}`,
         { method:'POST', headers:{'Content-Type':'application/json'}, signal: ctrl.signal,
           body: JSON.stringify({ contents:[{parts:[{text:prompt}]}],
             generationConfig:{ responseModalities:['AUDIO'],
@@ -1741,12 +1805,18 @@ let speechUtterance = null;
 const storyData = [...presetStories];
 
 function saveApiKey() {
-  const val = document.getElementById('gemini-api-key').value.trim();
-  if (!val) return;
-  geminiApiKey = val;
+  const input = document.getElementById('gemini-api-key');
+  const val = input?.value.trim() || '';
   const st = document.getElementById('api-status');
+  if (!st) return;
+  geminiApiKey = val;
+  try {
+    if (val) localStorage.setItem(GEMINI_STORAGE_KEY, val);
+    else localStorage.removeItem(GEMINI_STORAGE_KEY);
+  } catch {}
   st.style.display = 'block';
-  st.textContent = '✓ API Key সংরক্ষিত হয়েছে';
+  st.textContent = val ? '✓ Gemini API key saved.' : 'Key cleared.';
+  setAiGenIdleMessage();
   setTimeout(() => { st.style.display = 'none'; }, 3000);
 }
 
@@ -1828,9 +1898,8 @@ async function playWithGeminiTTS(arabic, english, idx, key) {
   const st = document.getElementById('tts-status-' + idx);
   const prompt = `Read this Arabic story aloud: "${arabic}". Then read the English translation: "${english}".`;
 
-  const models = ['gemini-2.5-flash-preview-tts', 'gemini-2.0-flash'];
   let part = null;
-  for (const model of models) {
+  for (const model of GEMINI_TTS_MODELS) {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
       {
@@ -1931,7 +2000,7 @@ async function generateAIStory() {
 
   try {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${key}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_STORY_MODEL}:generateContent?key=${key}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1945,11 +2014,14 @@ Respond ONLY with valid JSON in exactly this format, no markdown:
 {"title_ar":"Arabic title","title_bn":"Bengali title","arabic":"Full Arabic story text","bengali":"Full Bengali translation"}`
             }]
           }],
-          generationConfig: { temperature: 0.7 }
+          generationConfig: {
+            temperature: 0.7,
+            responseMimeType: 'application/json'
+          }
         })
       }
     );
-    if (!res.ok) throw new Error('API error ' + res.status);
+    if (!res.ok) throw new Error(await getGeminiErrorMessage(res));
     const data = await res.json();
     let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     raw = raw.replace(/```json|```/g, '').trim();
@@ -1976,6 +2048,7 @@ Respond ONLY with valid JSON in exactly this format, no markdown:
 }
 
 // Init stories on load
+loadSavedApiKey();
 renderStories();
 
 // ==============================
