@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="bn" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>আরবি শিক্ষা — Arabic Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Bengali:wght@400;600;700&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --emerald: #0d5c3a;
+    --emerald-light: #1a7a4f;
+    --emerald-dark: #083d27;
+    --gold: #c9972a;
+    --gold-light: #e8b84b;
+    --gold-pale: #f5e6b8;
+    --cream: #faf6ed;
+    --parchment: #f0e8d0;
+    --ink: #1a1208;
+    --text-body: #2d1f0a;
+    --shadow-deep: rgba(8,30,18,0.45);
+    --shadow-gold: rgba(201,151,42,0.3);
+    --geo-1: #0d5c3a;
+    --geo-2: #1a7a4f;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Serif Bengali', serif;
+    background: var(--emerald-dark);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === GEOMETRIC PATTERN BACKGROUND === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(201,151,42,0.04) 20px, rgba(201,151,42,0.04) 21px),
+      repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(201,151,42,0.04) 20px, rgba(201,151,42,0.04) 21px),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(13,92,58,0.15) 40px, rgba(13,92,58,0.15) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(13,92,58,0.15) 40px, rgba(13,92,58,0.15) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* === HEADER === */
+  .header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+    border-bottom: 2px solid var(--gold);
+    background: linear-gradient(180deg, rgba(8,30,18,0.9) 0%, rgba(13,61,38,0.7) 100%);
+  }
+
+  .header-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .ornament-line {
+    flex: 1;
+    max-width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .ornament-diamond {
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--gold-light);
+    letter-spacing: 0.15em;
+    text-shadow: 0 2px 20px var(--shadow-gold);
+    margin-bottom: 0.3rem;
+  }
+
+  .header-arabic {
+    font-family: 'Amiri', serif;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    color: var(--cream);
+    direction: rtl;
+    line-height: 1.3;
+    text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+  }
+
+  .header-subtitle {
+    font-size: 0.85rem;
+    color: var(--gold-pale);
+    opacity: 0.75;
+    margin-top: 0.4rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* === TABS === */
+  .tabs {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 1.2rem 1rem 0;
+    background: rgba(8,30,18,0.5);
+  }
+
+  .tab-btn {
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: 0.9rem;
+    padding: 0.65rem 1.6rem;
+    border: 1px solid var(--gold);
+    border-bottom: none;
+    background: rgba(13,61,38,0.4);
+    color: var(--gold-pale);
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    letter-spacing: 0.04em;
+  }
+
+  .tab-btn:first-child { border-radius: 8px 0 0 0; }
+  .tab-btn:last-child  { border-radius: 0 8px 0 0; }
+
+  .tab-btn:hover {
+    background: rgba(201,151,42,0.15);
+    color: var(--gold-light);
+  }
+
+  .tab-btn.active {
+    background: var(--emerald);
+    color: var(--gold-light);
+    font-weight: 700;
+    border-color: var(--gold);
+    box-shadow: 0 -3px 0 var(--gold) inset;
+  }
+
+  /* === MAIN CONTENT === */
+  .main {
+    position: relative;
+    z-index: 10;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === SECTION TITLES === */
+  .section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-title h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    color: var(--gold-light);
+    letter-spacing: 0.12em;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title h2::after {
+    content: '';
+    display: block;
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0.5rem auto 0;
+  }
+
+  /* ============================
+     FLASHCARD SECTION
+  ============================= */
+  .flashcard-counter {
+    text-align: center;
+    color: var(--gold-pale);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+    letter-spacing: 0.1em;
+  }
+
+  .flashcard-stage {
+    perspective: 1200px;
+    width: 100%;
+    max-width: 420px;
+    height: 260px;
+    margin: 0 auto 1.8rem;
+    cursor: pointer;
+  }
+
+  .flashcard-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .flashcard-stage.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    border: 1.5px solid var(--gold);
+    box-shadow: 0 8px 40px var(--shadow-deep), 0 0 0 1px rgba(201,151,42,0.1);
+  }
+
+  .card-front {
+    background: linear-gradient(135deg, var(--emerald-dark) 0%, var(--emerald) 100%);
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, #1a0a02 0%, #2d1f0a 100%);
+    transform: rotateY(180deg);
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.7;
+    margin-bottom: 0.8rem;
+    font-family: 'Cinzel', serif;
+  }
+
+  .card-arabic {
+    font-family: 'Amiri', serif;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    direction: rtl;
+    color: var(--cream);
+    text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .card-transliteration {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--gold-pale);
+    margin-top: 0.6rem;
+    opacity: 0.75;
+    letter-spacing: 0.05em;
+  }
+
+  .card-meaning {
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    color: var(--gold-light);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .card-english {
+    font-size: 0.9rem;
+    color: var(--cream);
+    opacity: 0.65;
+    font-style: italic;
+  }
+
+  .card-hint {
+    position: absolute;
+    bottom: 12px;
+    font-size: 0.68rem;
+    color: var(--gold);
+    opacity: 0.5;
+    letter-spacing: 0.1em;
+  }
+
+  /* Sound button on card */
+  .sound-btn-card {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: rgba(201,151,42,0.15);
+    border: 1px solid rgba(201,151,42,0.4);
+    color: var(--gold-light);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    z-index: 5;
+  }
+
+  .sound-btn-card:hover {
+    background: rgba(201,151,42,0.35);
+    transform: scale(1.1);
+  }
+
+  .sound-btn-card.playing {
+    background: rgba(201,151,42,0.5);
+    box-shadow: 0 0 12px var(--shadow-gold);
+    animation: pulse-gold 0.8s infinite;
+  }
+
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 8px var(--shadow-gold); }
+    50%       { box-shadow: 0 0 20px rgba(201,151,42,0.6); }
+  }
+
+  /* Flashcard controls */
+  .fc-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-nav {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    padding: 0.55rem 1.4rem;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold-light);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-nav:hover {
+    background: rgba(201,151,42,0.2);
+    box-shadow: 0 0 15px var(--shadow-gold);
+  }
+
+  .btn-flip {
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: 0.85rem;
+    padding: 0.6rem 1.8rem;
+    background: var(--gold);
+    border: none;
+    color: var(--ink);
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px var(--shadow-gold);
+  }
+
+  .btn-flip:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--shadow-gold);
+  }
+
+  /* Progress dots */
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 1.2rem 0;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(201,151,42,0.25);
+    border: 1px solid rgba(201,151,42,0.4);
+    transition: background 0.3s;
+  }
+
+  .dot.active {
+    background: var(--gold);
+    box-shadow: 0 0 6px var(--shadow-gold);
+  }
+
+  /* ============================
+     MEMORY GAME SECTION
+  ============================= */
+  .game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-box {
+    text-align: center;
+    background: rgba(13,61,38,0.5);
+    border: 1px solid rgba(201,151,42,0.3);
+    border-radius: 10px;
+    padding: 0.6rem 1.4rem;
+    min-width: 90px;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--cream);
+    font-family: 'Cinzel', serif;
+  }
+
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-width: 680px;
+    margin: 0 auto 1.5rem;
+  }
+
+  @media (max-width: 500px) {
+    .game-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  }
+
+  .game-card {
+    aspect-ratio: 1 / 1.1;
+    perspective: 600px;
+    cursor: pointer;
+  }
+
+  .game-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 10px;
+  }
+
+  .game-card.flipped .game-card-inner,
+  .game-card.matched .game-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .game-card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    text-align: center;
+    font-size: 0.85rem;
+    border: 1.5px solid rgba(201,151,42,0.3);
+  }
+
+  .game-card-back-face {
+    background: linear-gradient(135deg, var(--emerald), var(--emerald-light));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-card-back-face::after {
+    content: '◈';
+    font-size: 1.8rem;
+    color: rgba(201,151,42,0.3);
+  }
+
+  .game-card-front-face {
+    background: linear-gradient(135deg, #1a0a02, #2d1f0a);
+    transform: rotateY(180deg);
+    flex-direction: column;
+    gap: 4px;
+    border-color: rgba(201,151,42,0.5);
+  }
+
+  .game-card.matched .game-card-front-face {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #1a2d0a, #2d3a12);
+    box-shadow: 0 0 15px rgba(100,200,80,0.3);
+  }
+
+  .game-card-arabic {
+    font-family: 'Amiri', serif;
+    font-size: 1.2rem;
+    direction: rtl;
+    color: var(--cream);
+    line-height: 1;
+  }
+
+  .game-card-text {
+    font-size: 0.72rem;
+    color: var(--gold-pale);
+    line-height: 1.2;
+  }
+
+  .btn-game {
+    display: block;
+    margin: 0 auto;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    padding: 0.65rem 2rem;
+    background: var(--gold);
+    border: none;
+    color: var(--ink);
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px var(--shadow-gold);
+  }
+
+  .btn-game:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .game-message {
+    text-align: center;
+    padding: 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    min-height: 2.5rem;
+  }
+
+  .game-message.success {
+    background: rgba(50,200,100,0.15);
+    border: 1px solid rgba(50,200,100,0.4);
+    color: #7dffb0;
+  }
+
+  .game-message.error {
+    background: rgba(200,50,50,0.15);
+    border: 1px solid rgba(200,50,50,0.4);
+    color: #ff9090;
+  }
+
+  .game-message.win {
+    background: rgba(201,151,42,0.2);
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.1em;
+  }
+
+  /* ============================
+     QUIZ SECTION
+  ============================= */
+  .quiz-progress-bar {
+    height: 6px;
+    background: rgba(201,151,42,0.2);
+    border-radius: 3px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--emerald-light), var(--gold));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .quiz-score-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--gold-pale);
+    opacity: 0.8;
+  }
+
+  .quiz-card {
+    background: linear-gradient(135deg, rgba(13,61,38,0.7), rgba(8,30,18,0.9));
+    border: 1.5px solid rgba(201,151,42,0.4);
+    border-radius: 18px;
+    padding: 2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    box-shadow: 0 8px 40px var(--shadow-deep);
+  }
+
+  .quiz-question-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    opacity: 0.7;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .quiz-arabic {
+    font-family: 'Amiri', serif;
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    direction: rtl;
+    color: var(--cream);
+    text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .quiz-transliteration {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: var(--gold-pale);
+    opacity: 0.6;
+    margin-bottom: 0.8rem;
+  }
+
+  .quiz-sound-btn {
+    background: rgba(201,151,42,0.1);
+    border: 1px solid rgba(201,151,42,0.35);
+    color: var(--gold-light);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .quiz-sound-btn:hover {
+    background: rgba(201,151,42,0.25);
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .quiz-option {
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: 1rem;
+    padding: 0.9rem 1rem;
+    background: rgba(13,61,38,0.5);
+    border: 1.5px solid rgba(201,151,42,0.3);
+    color: var(--cream);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .quiz-option:hover:not(:disabled) {
+    background: rgba(201,151,42,0.15);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-gold);
+  }
+
+  .quiz-option.correct {
+    background: rgba(50,180,80,0.25);
+    border-color: #5ddc7a;
+    color: #b0ffca;
+  }
+
+  .quiz-option.wrong {
+    background: rgba(200,50,50,0.2);
+    border-color: #e06060;
+    color: #ffb0b0;
+  }
+
+  .quiz-option:disabled {
+    cursor: default;
+  }
+
+  .quiz-feedback {
+    text-align: center;
+    min-height: 2.2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: all 0.3s;
+    margin-bottom: 0.5rem;
+  }
+
+  .quiz-feedback.correct { color: #7dffb0; }
+  .quiz-feedback.wrong   { color: #ff9090; }
+
+  .quiz-next-btn {
+    display: block;
+    margin: 1rem auto 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    padding: 0.65rem 2rem;
+    background: var(--gold);
+    border: none;
+    color: var(--ink);
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px var(--shadow-gold);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+  }
+
+  .quiz-next-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .quiz-next-btn:hover { background: var(--gold-light); }
+
+  /* Quiz Result */
+  .quiz-result {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(13,61,38,0.8), rgba(8,30,18,0.95));
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    display: none;
+  }
+
+  .quiz-result.show { display: block; animation: fadeIn 0.5s ease; }
+
+  .result-score {
+    font-family: 'Cinzel', serif;
+    font-size: 3.5rem;
+    color: var(--gold-light);
+    font-weight: 700;
+    text-shadow: 0 0 30px var(--shadow-gold);
+    margin: 0.5rem 0;
+  }
+
+  .result-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-pale);
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+
+  .result-message {
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin: 1rem 0;
+  }
+
+  .result-stars {
+    font-size: 2rem;
+    letter-spacing: 0.3rem;
+    margin: 0.5rem 0;
+  }
+
+  .btn-restart {
+    margin-top: 1.2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    padding: 0.65rem 2rem;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold-light);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-restart:hover {
+    background: rgba(201,151,42,0.15);
+  }
+
+  /* ============================
+     STORY SECTION
+  ============================= */
+  .api-key-bar {
+    background: rgba(8,30,18,0.7);
+    border: 1px solid rgba(201,151,42,0.3);
+    border-radius: 12px;
+    padding: 0.9rem 1.2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .api-key-bar label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .api-key-input {
+    flex: 1;
+    min-width: 180px;
+    background: rgba(13,61,38,0.6);
+    border: 1px solid rgba(201,151,42,0.35);
+    color: var(--cream);
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    outline: none;
+    font-family: monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .api-key-input:focus { border-color: var(--gold); }
+  .api-key-input::placeholder { color: rgba(245,230,184,0.3); }
+
+  .api-save-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 0.45rem 1.1rem;
+    background: var(--gold);
+    border: none;
+    color: var(--ink);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .api-save-btn:hover { background: var(--gold-light); }
+
+  .api-status {
+    font-size: 0.72rem;
+    color: #7dffb0;
+    width: 100%;
+    display: none;
+  }
+
+  /* Story cards list */
+  .story-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .story-card {
+    background: linear-gradient(135deg, rgba(13,61,38,0.6), rgba(8,30,18,0.85));
+    border: 1.5px solid rgba(201,151,42,0.35);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 30px var(--shadow-deep);
+    transition: border-color 0.3s;
+  }
+
+  .story-card.playing { border-color: var(--gold); box-shadow: 0 0 25px rgba(201,151,42,0.25); }
+
+  .story-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid rgba(201,151,42,0.2);
+    background: rgba(8,30,18,0.4);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .story-title-ar {
+    font-family: 'Amiri', serif;
+    font-size: 1.4rem;
+    direction: rtl;
+    color: var(--gold-light);
+  }
+
+  .story-title-bn {
+    font-size: 0.82rem;
+    color: var(--gold-pale);
+    opacity: 0.7;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.08em;
+  }
+
+  .story-play-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 1.1rem;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold-light);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .story-play-btn:hover { background: rgba(201,151,42,0.2); }
+  .story-play-btn.active { background: var(--gold); color: var(--ink); }
+
+  .story-play-btn .btn-icon { font-size: 1rem; transition: transform 0.2s; }
+  .story-play-btn.active .btn-icon { animation: spin-pulse 1.5s linear infinite; }
+
+  @keyframes spin-pulse {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.3); }
+  }
+
+  .story-body {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .story-arabic-text {
+    font-family: 'Amiri', serif;
+    font-size: clamp(1.25rem, 3.5vw, 1.65rem);
+    direction: rtl;
+    line-height: 2.2;
+    color: var(--cream);
+    text-align: right;
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* Word highlight during TTS */
+  .story-arabic-text .word {
+    display: inline;
+    border-radius: 4px;
+    padding: 0 2px;
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer;
+  }
+
+  .story-arabic-text .word:hover { background: rgba(201,151,42,0.2); }
+  .story-arabic-text .word.highlight {
+    background: var(--gold);
+    color: var(--ink);
+    text-shadow: none;
+  }
+
+  .story-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,151,42,0.3), transparent);
+    margin: 0.8rem 0;
+  }
+
+  .story-bengali-text {
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: var(--gold-pale);
+    opacity: 0.8;
+  }
+
+  .story-tts-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--gold);
+    opacity: 0.7;
+    padding: 0.4rem 1.4rem 0.9rem;
+    min-height: 1.8rem;
+  }
+
+  /* AI Story Generator */
+  .ai-gen-box {
+    background: linear-gradient(135deg, rgba(8,30,18,0.8), rgba(13,61,38,0.5));
+    border: 1.5px solid rgba(201,151,42,0.4);
+    border-radius: 16px;
+    padding: 1.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .ai-gen-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-light);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ai-gen-row {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+  }
+
+  .ai-topic-input {
+    flex: 1;
+    min-width: 160px;
+    background: rgba(13,61,38,0.6);
+    border: 1px solid rgba(201,151,42,0.35);
+    color: var(--cream);
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    outline: none;
+    font-family: 'Noto Serif Bengali', serif;
+  }
+
+  .ai-topic-input:focus { border-color: var(--gold); }
+  .ai-topic-input::placeholder { color: rgba(245,230,184,0.3); }
+
+  .ai-gen-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    padding: 0.55rem 1.4rem;
+    background: var(--gold);
+    border: none;
+    color: var(--ink);
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .ai-gen-btn:hover:not(:disabled) { background: var(--gold-light); transform: translateY(-1px); }
+  .ai-gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .ai-gen-status {
+    font-size: 0.8rem;
+    color: var(--gold-pale);
+    opacity: 0.7;
+    min-height: 1.2rem;
+    transition: all 0.3s;
+  }
+
+  .ai-gen-status.loading { color: var(--gold-light); opacity: 1; }
+  .ai-gen-status.error   { color: #ff9090; opacity: 1; }
+  .ai-gen-status.done    { color: #7dffb0; opacity: 1; }
+
+  /* === GLOBAL API KEY BAR === */
+  .global-key-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.45rem 1rem;
+    background: rgba(8,30,18,0.7);
+    border-bottom: 1px solid rgba(201,151,42,0.15);
+  }
+
+  .key-bar-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  .global-key-input {
+    background: rgba(13,61,38,0.5);
+    border: 1px solid rgba(201,151,42,0.25);
+    color: var(--cream);
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    outline: none;
+    font-family: monospace;
+    width: 260px;
+    max-width: 50vw;
+    transition: border-color 0.2s;
+  }
+
+  .global-key-input:focus { border-color: var(--gold); }
+  .global-key-input::placeholder { color: rgba(245,230,184,0.22); font-size: 0.7rem; }
+
+  .key-bar-hint {
+    font-size: 0.65rem;
+    color: var(--gold-pale);
+    opacity: 0.4;
+    white-space: nowrap;
+  }
+
+  /* FOOTER */
+  .footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(201,151,42,0.2);
+    color: rgba(245,230,184,0.35);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    font-family: 'Cinzel', serif;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-diamond"></div>
+    <div class="ornament-line"></div>
+  </div>
+  <div class="header-arabic">تَعَلَّمِ الْعَرَبِيَّة</div>
+  <h1>ARABIC LEARNING</h1>
+  <div class="header-subtitle">Your journey to learning Arabic starts here</div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('flashcard')">📖 Flashcards</button>
+  <button class="tab-btn" onclick="showTab('game')">🎮 Memory Game</button>
+  <button class="tab-btn" onclick="showTab('quiz')">🏆 Quiz</button>
+  <button class="tab-btn" onclick="showTab('story')">📚 Stories</button>
+</div>
+
+
+<main class="main">
+
+  <!-- =================== FLASHCARD SECTION =================== -->
+  <section id="sec-flashcard" class="section active">
+    <div class="section-title"><h2>FLASHCARDS</h2></div>
+
+    <div class="flashcard-counter" id="fc-counter">Word 1 / 20</div>
+
+    <div class="flashcard-stage" id="flashcard-stage" onclick="flipCard()">
+      <div class="flashcard-inner" id="fc-inner">
+        <div class="card-face card-front">
+          <button class="sound-btn-card" id="fc-sound-btn" onclick="event.stopPropagation(); playBilingual(vocab[currentCard].arabic, vocab[currentCard].english, 'fc-sound-btn')">🔊</button>
+          <div class="card-label">Arabic Word</div>
+          <div class="card-arabic" id="fc-arabic"></div>
+          <div class="card-transliteration" id="fc-translit"></div>
+          <div class="card-hint">Click to flip ▸</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-label">English Meaning</div>
+          <div class="card-meaning" id="fc-meaning"></div>
+          <div class="card-english" id="fc-english"></div>
+          <div class="card-hint">◂ Click to flip back</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-dots" id="fc-dots"></div>
+
+    <div class="fc-controls">
+      <button class="btn-nav" onclick="prevCard()">◀ Prev</button>
+      <button class="btn-flip" onclick="flipCard()">Flip</button>
+      <button class="btn-nav" onclick="nextCard()">Next ▶</button>
+    </div>
+  </section>
+
+  <!-- =================== MEMORY GAME SECTION =================== -->
+  <section id="sec-game" class="section">
+    <div class="section-title"><h2>MEMORY MATCH</h2></div>
+
+    <div class="game-stats">
+      <div class="stat-box">
+        <div class="stat-label">Moves</div>
+        <div class="stat-value" id="g-moves">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Time</div>
+        <div class="stat-value" id="g-timer">0:00</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Matched</div>
+        <div class="stat-value" id="g-matched">0/8</div>
+      </div>
+    </div>
+
+    <div class="game-message" id="g-message"></div>
+    <div class="game-grid" id="game-grid"></div>
+    <button class="btn-game" onclick="startGame()">New Game</button>
+  </section>
+
+  <!-- =================== QUIZ SECTION =================== -->
+  <section id="sec-quiz" class="section">
+    <div class="section-title"><h2>QUIZ</h2></div>
+
+    <div id="quiz-play">
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="q-progress" style="width:0%"></div>
+      </div>
+      <div class="quiz-score-display">
+        <span id="q-qnum">Question 1 / 10</span>
+        <span>Score: <strong id="q-score" style="color:var(--gold-light)">0</strong></span>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-question-label">What is the meaning of this Arabic word?</div>
+        <div class="quiz-arabic" id="q-arabic"></div>
+        <div class="quiz-transliteration" id="q-translit"></div>
+        <button class="quiz-sound-btn" onclick="playBilingual(quizWords[currentQ].arabic, quizWords[currentQ].english, this)">🔊 Listen</button>
+      </div>
+
+      <div class="quiz-options" id="q-options"></div>
+      <div class="quiz-feedback" id="q-feedback"></div>
+      <button class="quiz-next-btn" id="q-next-btn" onclick="nextQuestion()">পরের প্রশ্ন ▶</button>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div class="result-label">FINAL SCORE</div>
+      <div class="result-score" id="r-score">0/10</div>
+      <div class="result-stars" id="r-stars">⭐⭐⭐</div>
+      <div class="result-message" id="r-message"></div>
+      <button class="btn-restart" onclick="startQuiz()">Try Again</button>
+    </div>
+  </section>
+
+  <!-- =================== STORY SECTION =================== -->
+  <section id="sec-story" class="section">
+    <div class="section-title"><h2>ARABIC STORIES</h2></div>
+
+    <!-- Pre-written stories -->
+    <div class="story-list" id="story-list"></div>
+
+    <!-- AI Generator -->
+    <div class="ai-gen-box">
+      <div class="ai-gen-title">✨ Generate a New Story with Gemini AI</div>
+      <div class="ai-gen-row">
+        <input type="text" class="ai-topic-input" id="story-topic" placeholder="Enter story topic (e.g. family, nature, school...)">
+        <button class="ai-gen-btn" id="ai-gen-btn" onclick="generateAIStory()">Generate ✨</button>
+      </div>
+      <div class="ai-gen-status" id="ai-gen-status">Add a Gemini API key above to generate new AI stories.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  ◈ Arabic Language Learning ◈
+</footer>
+
+<script>
+// ==============================
+// VOCABULARY DATA
+// ==============================
+const vocab = [
+  { arabic: 'مرحبا',  translit: 'Marhaba',  bengali: 'স্বাগতম',      english: 'Welcome / Hello' },
+  { arabic: 'كتاب',   translit: 'Kitab',     bengali: 'বই',           english: 'Book' },
+  { arabic: 'بيت',    translit: 'Bayt',      bengali: 'বাড়ি',         english: 'House' },
+  { arabic: 'ماء',    translit: "Ma'",       bengali: 'পানি',          english: 'Water' },
+  { arabic: 'طعام',   translit: "Ta'am",     bengali: 'খাবার',        english: 'Food' },
+  { arabic: 'مدرسة',  translit: 'Madrasa',   bengali: 'মাদ্রাসা / স্কুল', english: 'School' },
+  { arabic: 'أم',     translit: 'Umm',       bengali: 'মা',            english: 'Mother' },
+  { arabic: 'أب',     translit: 'Ab',        bengali: 'বাবা',          english: 'Father' },
+  { arabic: 'يد',     translit: 'Yad',       bengali: 'হাত',           english: 'Hand' },
+  { arabic: 'عين',    translit: 'Ayn',       bengali: 'চোখ',           english: 'Eye' },
+  { arabic: 'قلم',    translit: 'Qalam',     bengali: 'কলম',           english: 'Pen' },
+  { arabic: 'باب',    translit: 'Bab',       bengali: 'দরজা',          english: 'Door' },
+  { arabic: 'شمس',   translit: 'Shams',     bengali: 'সূর্য',         english: 'Sun' },
+  { arabic: 'قمر',    translit: 'Qamar',     bengali: 'চাঁদ',          english: 'Moon' },
+  { arabic: 'نجم',    translit: 'Najm',      bengali: 'তারা',          english: 'Star' },
+  { arabic: 'سماء',   translit: "Sama'",     bengali: 'আকাশ',          english: 'Sky' },
+  { arabic: 'أرض',    translit: 'Ard',       bengali: 'মাটি / পৃথিবী', english: 'Earth / Ground' },
+  { arabic: 'شجرة',   translit: 'Shajara',   bengali: 'গাছ',           english: 'Tree' },
+  { arabic: 'نهر',    translit: 'Nahr',      bengali: 'নদী',           english: 'River' },
+  { arabic: 'جبل',    translit: 'Jabal',     bengali: 'পাহাড়',        english: 'Mountain' }
+];
+
+// ==============================
+// AUDIO — Gemini 2.5 Flash TTS
+// ==============================
+let currentAudio = null;
+
+function getGeminiKey() {
+  return 'AIzaSyB5qtE4DNLMQpYY55irRDDI-ahlMM2YPFc';
+}
+
+function setBtnPlaying(btnEl, on) {
+  if (!btnEl) return;
+  if (typeof btnEl === 'string') btnEl = document.getElementById(btnEl);
+  if (!btnEl) return;
+  btnEl.classList.toggle('playing', on);
+}
+
+// Pre-load voices
+if (window.speechSynthesis) window.speechSynthesis.getVoices();
+
+// Instant playback via Web Speech — no network delay
+async function playBilingual(arabic, english, btnEl) {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  document.querySelectorAll('.sound-btn-card, .quiz-sound-btn').forEach(b => b.classList.remove('playing'));
+  if (typeof btnEl === 'string') btnEl = document.getElementById(btnEl);
+  setBtnPlaying(btnEl, true);
+  webSpeechTTS(arabic, english, btnEl);
+}
+
+function webSpeechTTS(arabic, english, btnEl) {
+  if (!window.speechSynthesis) { setBtnPlaying(btnEl, false); return; }
+  window.speechSynthesis.cancel();
+
+  const speak = (text, lang, onDone) => {
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang;
+    utt.rate = lang.startsWith('ar') ? 0.8 : 0.9;
+    // Pick best matching voice
+    const voices = window.speechSynthesis.getVoices();
+    const v = voices.find(v => v.lang.startsWith(lang.split('-')[0]));
+    if (v) utt.voice = v;
+    utt.onend = onDone;
+    utt.onerror = onDone;
+    window.speechSynthesis.speak(utt);
+  };
+
+  speak(arabic, 'ar-SA', () => {
+    if (english) {
+      speak(english, 'en-US', () => setBtnPlaying(btnEl, false));
+    } else {
+      setBtnPlaying(btnEl, false);
+    }
+  });
+}
+
+// Alias for story word clicks (Arabic only)
+function playSound(arabicText, btnEl) { playBilingual(arabicText, '', btnEl); }
+
+// ==============================
+// FLASHCARD
+// ==============================
+let currentCard = 0;
+let cardFlipped = false;
+
+function renderCard() {
+  const v = vocab[currentCard];
+  document.getElementById('fc-arabic').textContent   = v.arabic;
+  document.getElementById('fc-translit').textContent = v.translit;
+  document.getElementById('fc-meaning').textContent  = v.english;
+  document.getElementById('fc-english').textContent  = v.translit;
+  document.getElementById('fc-counter').textContent  = `Word ${currentCard + 1} / ${vocab.length}`;
+
+  // Reset flip
+  document.getElementById('flashcard-stage').classList.remove('flipped');
+  cardFlipped = false;
+
+  // Update dots
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((d, i) => d.classList.toggle('active', i === currentCard));
+}
+
+function flipCard() {
+  cardFlipped = !cardFlipped;
+  document.getElementById('flashcard-stage').classList.toggle('flipped', cardFlipped);
+}
+
+function nextCard() {
+  currentCard = (currentCard + 1) % vocab.length;
+  renderCard();
+}
+
+function prevCard() {
+  currentCard = (currentCard - 1 + vocab.length) % vocab.length;
+  renderCard();
+}
+
+// Build progress dots
+(function buildDots() {
+  const container = document.getElementById('fc-dots');
+  vocab.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => { currentCard = i; renderCard(); };
+    container.appendChild(d);
+  });
+})();
+
+renderCard();
+
+// ==============================
+// MEMORY GAME
+// ==============================
+let gameMoves = 0, gameMatched = 0, gameTimer = null, gameSeconds = 0;
+let firstPick = null, secondPick = null, canPick = true;
+
+function startGame() {
+  clearInterval(gameTimer);
+  gameMoves = 0; gameMatched = 0; gameSeconds = 0;
+  firstPick = null; secondPick = null; canPick = true;
+  updateGameStats();
+  document.getElementById('g-message').textContent = '';
+  document.getElementById('g-message').className = 'game-message';
+
+  // Pick 8 random words
+  const shuffled = [...vocab].sort(() => Math.random() - 0.5).slice(0, 8);
+
+  // Create pairs: one arabic card, one bengali card
+  const pairs = [];
+  shuffled.forEach(w => {
+    pairs.push({ id: w.arabic, display: w.arabic,  type: 'arabic',  matchId: w.arabic, word: w });
+    pairs.push({ id: w.arabic, display: w.english, type: 'english', matchId: w.arabic, word: w });
+  });
+
+  // Shuffle
+  pairs.sort(() => Math.random() - 0.5);
+
+  const grid = document.getElementById('game-grid');
+  grid.innerHTML = '';
+
+  pairs.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    card.dataset.idx = idx;
+    card.dataset.matchId = item.matchId;
+    card.dataset.type = item.type;
+
+    const inner = document.createElement('div');
+    inner.className = 'game-card-inner';
+
+    const back = document.createElement('div');
+    back.className = 'game-card-face game-card-back-face';
+
+    const front = document.createElement('div');
+    front.className = 'game-card-face game-card-front-face';
+
+    if (item.type === 'arabic') {
+      const ar = document.createElement('div');
+      ar.className = 'game-card-arabic';
+      ar.textContent = item.display;
+      const tr = document.createElement('div');
+      tr.className = 'game-card-text';
+      tr.textContent = item.word.translit;
+      front.appendChild(ar);
+      front.appendChild(tr);
+    } else {
+      const bn = document.createElement('div');
+      bn.className = 'game-card-text';
+      bn.style.fontSize = '0.9rem';
+      bn.style.color = 'var(--gold-light)';
+      bn.style.fontWeight = '600';
+      bn.textContent = item.display;
+      front.appendChild(bn);
+    }
+
+    inner.appendChild(back);
+    inner.appendChild(front);
+    card.appendChild(inner);
+
+    card.addEventListener('click', () => onGameCardClick(card, item));
+    grid.appendChild(card);
+  });
+
+  // Start timer
+  gameTimer = setInterval(() => {
+    gameSeconds++;
+    const m = Math.floor(gameSeconds / 60);
+    const s = gameSeconds % 60;
+    document.getElementById('g-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  }, 1000);
+}
+
+function onGameCardClick(card, item) {
+  if (!canPick) return;
+  if (card.classList.contains('matched') || card.classList.contains('flipped')) return;
+
+  card.classList.add('flipped');
+
+  if (!firstPick) {
+    firstPick = { card, item };
+    return;
+  }
+
+  secondPick = { card, item };
+  gameMoves++;
+  updateGameStats();
+  canPick = false;
+
+  if (firstPick.item.matchId === secondPick.item.matchId && firstPick.item.type !== secondPick.item.type) {
+    // Match!
+    setTimeout(() => {
+      firstPick.card.classList.add('matched');
+      secondPick.card.classList.add('matched');
+      gameMatched++;
+      updateGameStats();
+      showGameMsg('✓ Correct match!', 'success');
+      playBilingual(firstPick.item.word.arabic, firstPick.item.word.english);
+      firstPick = null; secondPick = null; canPick = true;
+
+      if (gameMatched === 8) {
+        clearInterval(gameTimer);
+        const m = Math.floor(gameSeconds / 60);
+        const s = gameSeconds % 60;
+        showGameMsg(`🎉 Congratulations! Finished in ${gameMoves} moves — ${m}:${s.toString().padStart(2,'0')}`, 'win');
+      }
+    }, 400);
+  } else {
+    // No match
+    setTimeout(() => {
+      showGameMsg('✗ No match, try again', 'error');
+      firstPick.card.classList.remove('flipped');
+      secondPick.card.classList.remove('flipped');
+      firstPick = null; secondPick = null; canPick = true;
+    }, 900);
+  }
+}
+
+function updateGameStats() {
+  document.getElementById('g-moves').textContent   = gameMoves;
+  document.getElementById('g-matched').textContent = `${gameMatched}/8`;
+}
+
+function showGameMsg(text, type) {
+  const el = document.getElementById('g-message');
+  el.textContent = text;
+  el.className = 'game-message ' + type;
+}
+
+// ==============================
+// QUIZ
+// ==============================
+let quizWords = [], currentQ = 0, quizScore = 0, answered = false;
+const QUIZ_TOTAL = 10;
+
+function startQuiz() {
+  document.getElementById('quiz-play').style.display = 'block';
+  document.getElementById('quiz-result').classList.remove('show');
+
+  quizWords = [...vocab].sort(() => Math.random() - 0.5).slice(0, QUIZ_TOTAL);
+  currentQ = 0;
+  quizScore = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = quizWords[currentQ];
+
+  document.getElementById('q-arabic').textContent  = q.arabic;
+  document.getElementById('q-translit').textContent = q.translit;
+  document.getElementById('q-qnum').textContent     = `Question ${currentQ + 1} / ${QUIZ_TOTAL}`;
+  document.getElementById('q-score').textContent    = quizScore;
+  document.getElementById('q-progress').style.width = `${(currentQ / QUIZ_TOTAL) * 100}%`;
+  document.getElementById('q-feedback').textContent = '';
+  document.getElementById('q-feedback').className   = 'quiz-feedback';
+
+  const nextBtn = document.getElementById('q-next-btn');
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = currentQ < QUIZ_TOTAL - 1 ? 'Next Question ▶' : 'See Results ▶';
+
+  // Update sound btn
+  const soundBtn = document.querySelector('.quiz-sound-btn');
+  soundBtn.onclick = () => playBilingual(q.arabic, q.english, soundBtn);
+  soundBtn.classList.remove('playing');
+
+  // Build options: 1 correct + 3 wrong
+  const options = [q];
+  const others = vocab.filter(v => v.arabic !== q.arabic);
+  others.sort(() => Math.random() - 0.5);
+  options.push(...others.slice(0, 3));
+  options.sort(() => Math.random() - 0.5);
+
+  const container = document.getElementById('q-options');
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = opt.english;
+    btn.onclick = () => checkAnswer(btn, opt.arabic === q.arabic, q);
+    container.appendChild(btn);
+  });
+}
+
+function checkAnswer(btn, isCorrect, q) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.quiz-option');
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent === q.english) b.classList.add('correct');
+  });
+
+  const feedback = document.getElementById('q-feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    quizScore++;
+    document.getElementById('q-score').textContent = quizScore;
+    feedback.textContent = '✓ Excellent! Correct answer!';
+    feedback.className = 'quiz-feedback correct';
+    playBilingual(q.arabic, q.english);
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = `✗ Wrong! Correct answer: ${q.english}`;
+    feedback.className = 'quiz-feedback wrong';
+  }
+
+  document.getElementById('q-next-btn').classList.add('show');
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= QUIZ_TOTAL) {
+    showQuizResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showQuizResult() {
+  document.getElementById('quiz-play').style.display = 'none';
+  const result = document.getElementById('quiz-result');
+  result.classList.add('show');
+
+  const pct = quizScore / QUIZ_TOTAL;
+  document.getElementById('r-score').textContent = `${quizScore}/${QUIZ_TOTAL}`;
+
+  let stars = '⭐', msg = '';
+  if      (pct === 1)   { stars = '⭐⭐⭐'; msg = 'Outstanding! Perfect score! 🎉'; }
+  else if (pct >= 0.8)  { stars = '⭐⭐⭐'; msg = 'Great job! Almost perfect!'; }
+  else if (pct >= 0.6)  { stars = '⭐⭐';   msg = 'Good effort! Keep practising.'; }
+  else if (pct >= 0.4)  { stars = '⭐';     msg = 'Keep trying — you can do it!'; }
+  else                  { stars = '💪';     msg = "Don't give up — try again!"; }
+
+  document.getElementById('r-stars').textContent   = stars;
+  document.getElementById('r-message').textContent = msg;
+}
+
+// ==============================
+// TAB NAVIGATION
+// ==============================
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  document.getElementById('sec-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  if (name === 'game' && document.getElementById('game-grid').children.length === 0) {
+    startGame();
+  }
+  if (name === 'quiz') {
+    startQuiz();
+  }
+  if (name === 'story') {
+    stopStoryTTS();
+  }
+}
+
+// ==============================
+// STORY SECTION
+// ==============================
+const presetStories = [
+  {
+    title_ar: 'الأُسْرَة',
+    title_bn: 'The Family',
+    arabic: 'فِي بَيْتِنَا أُسْرَةٌ كَبِيرَةٌ. أَبِي يَعْمَلُ كَثِيرًا. أُمِّي تَطْبُخُ الطَّعَامَ اللَّذِيذَ. لِي أَخٌ صَغِيرٌ وَأُخْتٌ كَبِيرَةٌ. نَحْنُ نُحِبُّ بَعْضَنَا كَثِيرًا. نَأْكُلُ مَعًا فِي الْمَسَاءِ. أُسْرَتُنَا سَعِيدَةٌ.',
+    bengali: 'We have a big family at home. My father works a lot. My mother cooks delicious food. I have a younger brother and an older sister. We love each other very much. We eat together in the evening. Our family is happy.'
+  },
+  {
+    title_ar: 'الْمَدْرَسَة',
+    title_bn: 'The School',
+    arabic: 'أَذْهَبُ إِلَى الْمَدْرَسَةِ كُلَّ يَوْمٍ. أَتَعَلَّمُ الْقِرَاءَةَ وَالْكِتَابَةَ. مُعَلِّمِي رَجُلٌ طَيِّبٌ. أَصْدِقَائِي كَثِيرُونَ فِي الْمَدْرَسَةِ. نَلْعَبُ مَعًا فِي الْفِنَاءِ. أُحِبُّ الْمَدْرَسَةَ كَثِيرًا.',
+    bengali: 'I go to school every day. I learn reading and writing. My teacher is a kind man. I have many friends at school. We play together in the courtyard. I love school very much.'
+  },
+  {
+    title_ar: 'الطَّبِيعَة',
+    title_bn: 'Nature',
+    arabic: 'الطَّبِيعَةُ جَمِيلَةٌ جِدًّا. الشَّمْسُ تُشْرِقُ فِي الصَّبَاحِ. الْأَشْجَارُ خَضْرَاءُ وَطَوِيلَةٌ. النَّهْرُ يَجْرِي بَيْنَ الْجِبَالِ. الطُّيُورُ تُغَنِّي فِي الصَّبَاحِ. أُحِبُّ أَنْ أَمْشِيَ فِي الطَّبِيعَةِ.',
+    bengali: 'Nature is very beautiful. The sun rises in the morning. The trees are green and tall. The river flows between the mountains. The birds sing in the morning. I love to walk in nature.'
+  },
+  {
+    title_ar: 'يَوْمٌ فِي السُّوق',
+    title_bn: 'A Day at the Market',
+    arabic: 'ذَهَبْتُ إِلَى السُّوقِ مَعَ أُمِّي. رَأَيْنَا فَوَاكِهَ كَثِيرَةً وَخُضَرَاوَاتٍ. اشْتَرَيْنَا خُبْزًا وَحَلِيبًا وَتُفَّاحًا. النَّاسُ فِي السُّوقِ كَثِيرُونَ. الْبَائِعُ رَجُلٌ كَرِيمٌ. عُدْنَا إِلَى الْبَيْتِ مَسْرُورَيْنِ.',
+    bengali: 'I went to the market with my mother. We saw many fruits and vegetables. We bought bread, milk, and apples. There were many people at the market. The seller was a generous man. We returned home happy.'
+  }
+];
+
+let geminiApiKey = '';
+let storyAudio = null;
+let activeStoryIdx = -1;
+let speechUtterance = null;
+const storyData = [...presetStories];
+
+function saveApiKey() {
+  const val = document.getElementById('gemini-api-key').value.trim();
+  if (!val) return;
+  geminiApiKey = val;
+  const st = document.getElementById('api-status');
+  st.style.display = 'block';
+  st.textContent = '✓ API Key সংরক্ষিত হয়েছে';
+  setTimeout(() => { st.style.display = 'none'; }, 3000);
+}
+
+function renderStories() {
+  const list = document.getElementById('story-list');
+  list.innerHTML = '';
+  storyData.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'story-card';
+    card.id = 'story-card-' + i;
+
+    // Wrap arabic words with spans for highlighting
+    const words = s.arabic.split(/\s+/);
+    const wordSpans = words.map((w, wi) =>
+      `<span class="word" data-wi="${wi}" onclick="playWordTTS('${w.replace(/'/g,"\\'")}', this)">${w}</span>`
+    ).join(' ');
+
+    card.innerHTML = `
+      <div class="story-header">
+        <div>
+          <div class="story-title-ar">${s.title_ar}</div>
+          <div class="story-title-bn">${s.title_bn}</div>
+        </div>
+        <button class="story-play-btn" id="play-btn-${i}" onclick="toggleStoryTTS(${i})">
+          <span class="btn-icon">▶</span> Listen
+        </button>
+      </div>
+      <div class="story-body">
+        <div class="story-arabic-text" id="story-arabic-${i}">${wordSpans}</div>
+        <div class="story-divider"></div>
+        <div class="story-bengali-text">${s.bengali}</div>
+      </div>
+      <div class="story-tts-status" id="tts-status-${i}"></div>`;
+    list.appendChild(card);
+  });
+}
+
+function toggleStoryTTS(idx) {
+  // Stop current
+  if (activeStoryIdx === idx) {
+    stopStoryTTS();
+    return;
+  }
+  stopStoryTTS();
+  activeStoryIdx = idx;
+  playStoryTTS(idx);
+}
+
+function stopStoryTTS() {
+  if (storyAudio) { storyAudio.pause(); storyAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (activeStoryIdx >= 0) {
+    const btn = document.getElementById('play-btn-' + activeStoryIdx);
+    const card = document.getElementById('story-card-' + activeStoryIdx);
+    const st = document.getElementById('tts-status-' + activeStoryIdx);
+    if (btn) { btn.classList.remove('active'); btn.innerHTML = '<span class="btn-icon">▶</span> Listen'; }
+    if (card) card.classList.remove('playing');
+    if (st) st.textContent = '';
+    // Remove highlights
+    document.querySelectorAll(`#story-arabic-${activeStoryIdx} .word`).forEach(w => w.classList.remove('highlight'));
+  }
+  activeStoryIdx = -1;
+}
+
+async function playStoryTTS(idx) {
+  const s = storyData[idx];
+  const btn = document.getElementById('play-btn-' + idx);
+  const card = document.getElementById('story-card-' + idx);
+  const st = document.getElementById('tts-status-' + idx);
+
+  if (btn) { btn.classList.add('active'); btn.innerHTML = '<span class="btn-icon">■</span> Stop'; }
+  if (card) card.classList.add('playing');
+
+  const key = getGeminiKey() || (document.getElementById('gemini-api-key') || {}).value?.trim() || '';
+
+  // Try Gemini TTS (Arabic + English together)
+  if (key) {
+    if (st) st.textContent = '⏳ Generating audio with Gemini AI...';
+    try {
+      await playWithGeminiTTS(s.arabic, s.bengali, idx, key);
+      return;
+    } catch(e) {
+      console.error('Story Gemini TTS failed:', e);
+      if (st) st.textContent = '⚠️ Gemini TTS failed, using Web Speech...';
+    }
+  }
+
+  // Fallback: Web Speech API
+  playWithWebSpeech(s.arabic, s.bengali, idx);
+}
+
+async function playWithGeminiTTS(arabic, english, idx, key) {
+  const st = document.getElementById('tts-status-' + idx);
+  const prompt = `Read this Arabic story aloud: "${arabic}". Then read the English translation: "${english}".`;
+
+  const models = ['gemini-2.5-flash-preview-tts', 'gemini-2.0-flash'];
+  let part = null;
+  for (const model of models) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseModalities: ['AUDIO'],
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Aoede' } } }
+          }
+        })
+      }
+    );
+    if (!res.ok) { const t = await res.text(); console.warn(model, res.status, t); continue; }
+    const data = await res.json();
+    part = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData;
+    if (part) break;
+  }
+  if (!part) throw new Error('No audio data from Gemini');
+
+  if (st) st.textContent = '🔊 Playing with Gemini AI voice (Arabic → English)...';
+  const blob = new Blob([Uint8Array.from(atob(part.data), c => c.charCodeAt(0))], { type: part.mimeType });
+  storyAudio = new Audio(URL.createObjectURL(blob));
+  storyAudio.onended = () => stopStoryTTS();
+  storyAudio.onerror = () => stopStoryTTS();
+  storyAudio.play();
+}
+
+function playWithWebSpeech(arabic, english, idx) {
+  const st = document.getElementById('tts-status-' + idx);
+  if (!window.speechSynthesis) {
+    if (st) st.textContent = '⚠️ TTS not supported in this browser';
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const voices = window.speechSynthesis.getVoices();
+  let wordIndex = 0;
+
+  if (st) st.textContent = '🔊 Playing Arabic then English (Web Speech)...';
+
+  // --- Speak Arabic with word highlighting ---
+  const uttAr = new SpeechSynthesisUtterance(arabic);
+  uttAr.lang = 'ar-SA';
+  uttAr.rate = 0.75;
+  const arVoice = voices.find(v => v.lang.startsWith('ar'));
+  if (arVoice) uttAr.voice = arVoice;
+
+  uttAr.onboundary = (e) => {
+    if (e.name !== 'word') return;
+    document.querySelectorAll(`#story-arabic-${idx} .word`).forEach(w => w.classList.remove('highlight'));
+    const spans = document.querySelectorAll(`#story-arabic-${idx} .word`);
+    if (spans[wordIndex]) spans[wordIndex].classList.add('highlight');
+    wordIndex++;
+  };
+
+  uttAr.onend = () => {
+    document.querySelectorAll(`#story-arabic-${idx} .word`).forEach(w => w.classList.remove('highlight'));
+    if (!english) { stopStoryTTS(); return; }
+    // --- Then speak English ---
+    if (st) st.textContent = '🔊 Now reading English translation...';
+    const uttEn = new SpeechSynthesisUtterance(english);
+    uttEn.lang = 'en-US';
+    uttEn.rate = 0.9;
+    const enVoice = voices.find(v => v.lang.startsWith('en'));
+    if (enVoice) uttEn.voice = enVoice;
+    uttEn.onend = () => stopStoryTTS();
+    uttEn.onerror = () => stopStoryTTS();
+    window.speechSynthesis.speak(uttEn);
+  };
+
+  uttAr.onerror = () => stopStoryTTS();
+  window.speechSynthesis.speak(uttAr);
+}
+
+function playWordTTS(word, el) {
+  playSound(word, null);
+  document.querySelectorAll('.word').forEach(w => w.classList.remove('highlight'));
+  el.classList.add('highlight');
+  setTimeout(() => el.classList.remove('highlight'), 1200);
+}
+
+async function generateAIStory() {
+  geminiApiKey = (document.getElementById('gemini-api-key').value || '').trim();
+  if (!geminiApiKey) {
+    document.getElementById('ai-gen-status').textContent = '⚠️ Please enter a Gemini API Key first.';
+    document.getElementById('ai-gen-status').className = 'ai-gen-status error';
+    return;
+  }
+  const topic = document.getElementById('story-topic').value.trim() || 'বন্ধুত্ব';
+  const btn = document.getElementById('ai-gen-btn');
+  const st = document.getElementById('ai-gen-status');
+
+  btn.disabled = true;
+  st.className = 'ai-gen-status loading';
+  st.textContent = '⏳ Gemini AI is writing a story...';
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Write a very simple Arabic story (A1 beginner level, 5-7 sentences) about "${topic}".
+Use short sentences with harakat (diacritics) for easy reading.
+Also provide Bengali translation.
+Respond ONLY with valid JSON in exactly this format, no markdown:
+{"title_ar":"Arabic title","title_bn":"Bengali title","arabic":"Full Arabic story text","bengali":"Full Bengali translation"}`
+            }]
+          }],
+          generationConfig: { temperature: 0.7 }
+        })
+      }
+    );
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    raw = raw.replace(/```json|```/g, '').trim();
+    const story = JSON.parse(raw);
+
+    storyData.push(story);
+    renderStories();
+
+    st.className = 'ai-gen-status done';
+    st.textContent = '✓ New story generated! See below.';
+    document.getElementById('story-topic').value = '';
+
+    // Scroll to new story
+    setTimeout(() => {
+      const last = document.getElementById('story-card-' + (storyData.length - 1));
+      if (last) last.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  } catch(e) {
+    st.className = 'ai-gen-status error';
+    st.textContent = '✗ Generation failed: ' + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Init stories on load
+renderStories();
+
+// ==============================
+// Keyboard navigation for flashcards
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('sec-flashcard').classList.contains('active')) {
+    if (e.key === 'ArrowRight') nextCard();
+    if (e.key === 'ArrowLeft')  prevCard();
+    if (e.key === ' ')          { e.preventDefault(); flipCard(); }
+    if (e.key === 'p' || e.key === 'P') playBilingual(vocab[currentCard].arabic, vocab[currentCard].english, 'fc-sound-btn');
+  }
+});
+</script>
+</body>
+</html>
